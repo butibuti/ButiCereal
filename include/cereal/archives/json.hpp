@@ -31,14 +31,8 @@
 
 #include "ButiCereal/include/cereal/cereal.hpp"
 #include "ButiCereal/include/cereal/details/util.hpp"
+#include"ButiUtil/ButiUtil/Exception.h"
 
-namespace cereal
-{
-  //! An exception thrown when rapidjson fails an internal assertion
-  /*! @ingroup Utility */
-  struct RapidJSONException : Exception
-  { RapidJSONException( const char * what_ ) : Exception( what_ ) {} };
-}
 
 // Inform rapidjson that assert will throw
 #ifndef CEREAL_RAPIDJSON_ASSERT_THROWS
@@ -48,7 +42,7 @@ namespace cereal
 // Override rapidjson assertions to throw exceptions by default
 #ifndef CEREAL_RAPIDJSON_ASSERT
 #define CEREAL_RAPIDJSON_ASSERT(x) if(!(x)){ \
-  throw ::cereal::RapidJSONException("rapidjson internal assertion failure: " #x); }
+  THROWBUTIEXCEPTION("rapidjson internal assertion failure:"); }
 #endif // RAPIDJSON_ASSERT
 
 // Enable support for parsing of nan, inf, -inf
@@ -461,7 +455,7 @@ namespace cereal
         auto decoded = base64::decode( encoded );
 
         if( size != decoded.size() )
-          throw Exception("Decoded binary data size does not match specified size");
+          THROWBUTIEXCEPTION("Decoded binary data size does not match specified size");
 
         std::memcpy( data, decoded.data(), decoded.size() );
         itsNextName = nullptr;
@@ -510,7 +504,7 @@ namespace cereal
             {
               case Value : return itsValueItBegin[itsIndex];
               case Member: return itsMemberItBegin[itsIndex].value;
-              default: throw cereal::Exception("JSONInputArchive internal error: null or empty iterator to object or array!");
+              default: THROWBUTIEXCEPTION("JSONInputArchive internal error: null or empty iterator to object or array!");
             }
           }
 
@@ -540,7 +534,7 @@ namespace cereal
               }
             }
 
-            throw Exception("JSON Parsing failed - provided NVP (" + std::string(searchName) + ") not found");
+            THROWBUTIEXCEPTION("JSON Parsing failed - provided NVP (" + std::string(searchName) + ") not found");
           }
 
         private:
