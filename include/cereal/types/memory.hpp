@@ -542,7 +542,7 @@ namespace cereal
           // Allocate our storage, which we will treat as
           //  uninitialized until initialized with placement new
           using NonConstT = typename std::remove_const<T>::type;
-          ButiEngine::Value_ptr<NonConstT> ptr(reinterpret_cast<NonConstT*>(new ST()),
+          ButiEngine::Value_ptr<NonConstT> ptr(reinterpret_cast<NonConstT*>(ButiMemorySystem::Allocator::allocate<ST>()),
               [=](NonConstT* t)
               {
                   if (*valid)
@@ -575,7 +575,7 @@ namespace cereal
       if (id & detail::msb_32bit)
       {
           using NonConstT = typename std::remove_const<T>::type;
-          ButiEngine::Value_ptr<NonConstT> ptr(detail::Construct<NonConstT, Archive>::load_andor_construct());
+          ButiEngine::Value_ptr<NonConstT> ptr(ButiMemorySystem::Allocator::allocate<NonConstT>());
           ar.registerValuePointer(id, ptr);
           ar(CEREAL_NVP_("data", *ptr));
           wrapper.ptr = std::move(ptr);
